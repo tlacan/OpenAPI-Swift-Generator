@@ -1,0 +1,240 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Sample API
+  description: API for managing cities, activities, and trips for Dymatrip
+servers:
+  - url: http://localhost
+    description: Local server
+paths:
+  /api/cities:
+    get:
+      summary: Get all cities
+      responses:
+        '200':
+          description: A list of cities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/City'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/trips:
+    get:
+      summary: Get all trips
+      responses:
+        '200':
+          description: A list of trips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trip'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/trip:
+    post:
+      summary: Create a new trip
+      requestBody:
+        description: Trip object to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      responses:
+        '200':
+          description: Trip created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update an existing trip
+      requestBody:
+        description: Trip object to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Trip'
+      responses:
+        '200':
+          description: Trip updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/city/{cityId}/activity:
+    post:
+      summary: Add an activity to a city
+      parameters:
+        - in: path
+          name: cityId
+          required: true
+          schema:
+            type: string
+          description: City ID
+      requestBody:
+        description: Activity object to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Activity'
+      responses:
+        '200':
+          description: Activity added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/City'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/city/{cityId}/activities/verify/{activityName}:
+    get:
+      summary: Verify the uniqueness of an activity in a city
+      parameters:
+        - in: path
+          name: cityId
+          required: true
+          schema:
+            type: string
+          description: City ID
+        - in: path
+          name: activityName
+          required: true
+          schema:
+            type: string
+          description: Activity name
+      responses:
+        '200':
+          description: Activity is unique
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'Ok'
+        '400':
+          description: Activity already exists
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'L’activité existe déjà'
+  /api/activity/image:
+    post:
+      summary: Upload activity image
+      requestBody:
+        description: Activity image file to upload
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                activity:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'http://10.0.2.2/public/assets/images/activities/{filename}'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    City:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Paris
+        image:
+          type: string
+          example: http://localhost/assets/images/paris.jpg
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
+    Activity:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Louvre
+        image:
+          type: string
+          example: http://localhost/assets/images/activities/louvre.jpg
+        city:
+          type: string
+          example: Paris
+        price:
+          type: number
+          example: 12.0
+        status:
+          type: number
+          example: 0
+        address:
+          type: string
+          example: '123 Main St'
+        longitude:
+          type: number
+          example: 2.3522
+        latitude:
+          type: number
+          example: 48.8566
+    Trip:
+      type: object
+      properties:
+        city:
+          type: string
+          example: Paris
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
+        date:
+          type: string
+          format: date
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Error message
