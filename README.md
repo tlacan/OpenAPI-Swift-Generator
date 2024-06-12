@@ -1,5 +1,5 @@
 # Swift Code Generation Based on OpenAPI
-![Logo](logo.png){ width=128 height=128 }
+![Logo](logo.png "")
 
 ## Steps to Generate Swift Code Using OpenAPI Description
 
